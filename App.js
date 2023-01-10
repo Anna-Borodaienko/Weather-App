@@ -50,10 +50,11 @@ export default function App () {
     const {data: {current}} = await axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${location[0]}&lon=${location[1]}&appid=${API_key_weather}&units=metric&exclude=minutely,alerts`)
     console.log(current);
     getWeather([current.temp, current.weather[0].main, current.humidity, current.wind_speed]);
-    // const {data: } = await axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${location[0]}&lon=${location[1]}&appid=${API_key_weather}&units=metric&exclude=current,minutely,alerts`)
-    // getHourlyForecast(daily);
+    const {data: {daily}} = await axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${location[0]}&lon=${location[1]}&appid=${API_key_weather}&units=metric&exclude=current,minutely,alerts`)
+    getHourlyForecast(daily);
+    console.log(daily);
     getIconPath(`http://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`);
-    // getDate((new Date(data.daily[0].dt*1000)).toLocaleDateString());
+    getDate((new Date(daily[0].dt*1000)).toLocaleDateString());
     
   }
 
@@ -66,7 +67,7 @@ export default function App () {
     <View style={styles.container} onLayout={onLayoutRootView}>
       <View style={styles.user_info}>
         <Text style={styles.location}>{address.join(', ')}</Text>
-        <Text style={styles.date}>09/01/23</Text>
+        <Text style={styles.date}>{date}</Text>
       </View>
       
       <View style={styles.main}>
@@ -88,14 +89,14 @@ export default function App () {
             <Image
               style={styles.small_icon}
               source={{
-                uri: './assets/heweather-icon-S1-bw-source_399.png',
+                uri: `${iconPath}`,
               }}
             />
             <Text style={styles.info}>{weather[2]}%</Text>
             <Image
               style={styles.small_icon}
               source={{
-                uri: `./assets/heweather-icon-S1-bw-source_507.png`,
+                uri: `${iconPath}`,
               }}
             />
             <Text style={styles.info}>{weather[3]}m</Text>
@@ -104,40 +105,70 @@ export default function App () {
         </View>
       </View>
       
-      <ScrollView horizontal style={styles.forecast}>
+      <ScrollView horizontal pagingEnabled={true} style={styles.forecast}>
         <View style={styles.card}>
-          <Text style={styles.item}>1</Text>
-          <Text style={styles.item}>2</Text>
+          <Image
+              style={styles.small_icon}
+              source={{
+                uri: `${iconPath}`,
+              }}
+            />
+          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
           <Text style={styles.item}>3</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.item}>1</Text>
-          <Text style={styles.item}>2</Text>
+          <Image
+              style={styles.small_icon}
+              source={{
+                uri: `${iconPath}`,
+              }}
+            />
+          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
           <Text style={styles.item}>3</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.item}>1</Text>
-          <Text style={styles.item}>2</Text>
+          <Image
+              style={styles.small_icon}
+              source={{
+                uri: `${iconPath}`,
+              }}
+            />
+          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
           <Text style={styles.item}>3</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.item}>1</Text>
-          <Text style={styles.item}>2</Text>
+          <Image
+              style={styles.small_icon}
+              source={{
+                uri: `${iconPath}`,
+              }}
+            />
+          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
           <Text style={styles.item}>3</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.item}>1</Text>
-          <Text style={styles.item}>2</Text>
+          <Image
+              style={styles.small_icon}
+              source={{
+                uri: `${iconPath}`,
+              }}
+            />
+          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
           <Text style={styles.item}>3</Text>
         </View>
 
         <View style={styles.card}>
-          <Text style={styles.item}>1</Text>
-          <Text style={styles.item}>2</Text>
+          <Image
+              style={styles.small_icon}
+              source={{
+                uri: `${iconPath}`,
+              }}
+            />
+          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
           <Text style={styles.item}>3</Text>
         </View>
         
@@ -152,6 +183,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'rgba(39, 183, 245, 0.8)',
     alignItems: 'center',
+    paddingTop: StatusBar.currentHeight,
   },
   user_info: {
     flex: 1,
@@ -161,32 +193,33 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: 'Ruluko',
     marginTop: 30,
-    fontSize: 40,
+    fontSize: 30,
     color: 'rgba(40, 36, 37, 0.9)'
   },
   date: {
     flex: 1,
     fontFamily: 'Ruluko',
-    fontSize: 20,
+    fontSize: 15,
     color: 'rgba(40, 36, 37, 0.9)',
     textAlign: 'center'
   },
   main: {
-    flex: 4,
+    flex: 2,
     width: '100%',
-    height: 500,
+    height: 300,
     justifyContent: 'flex-start',
     alignItems: 'center',
   },
   main_block: {
-    flex: 2,
+    flex: 1,
     flexDirection: 'row',
     justifyContent: 'center',
-    alignItems: 'center'
+    alignItems: 'center',
+    
   },
   icon: {
     width: 200,
-    height: 150,
+    height: 100,
   },
   temp: {
     fontFamily: 'Ruluko',
@@ -195,13 +228,14 @@ const styles = StyleSheet.create({
   },
   description: {
     fontFamily: 'Ruluko',
-    fontSize: 30,
+    fontSize: 25,
     textAlign: 'center',
   },
   second_info: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-between'
+    justifyContent: 'space-between',
+    marginTop: 20,
   },
   info: {
     fontFamily: 'Ruluko',
@@ -214,10 +248,13 @@ const styles = StyleSheet.create({
     color: 'black'
   },
   forecast: {
-    borderColor: 'red',
-    borderWidth: 1
+    marginHorizontal: 20,
   },
   card: {
+    height: 100,
+    flex: 1,
+    justifyContent: 'space-around',
+    textAlign: 'center',
     padding: 20,
     margin: 20,
     borderColor: 'red',
