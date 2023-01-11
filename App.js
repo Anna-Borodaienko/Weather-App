@@ -5,6 +5,11 @@ import * as Location from 'expo-location';
 import * as SplashScreen from 'expo-splash-screen';
 import axios from 'axios';
 import { useFonts } from 'expo-font';
+import Header from './components/Header';
+import Day from './components/Day';
+import Current from './components/Current';
+import Forecast from './components/Forecast';
+import Address from './components/Address';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -12,7 +17,7 @@ export default function App () {
   const [location, setLocation] = useState([50.58921087278374, 30.51444583685887]);
   const [address, getAddress] = useState([]);
   const [weather, getWeather] = useState([]);
-  const [hourlyForecast, getHourlyForecast] = useState([])
+  const [hourlyForecast, getHourlyForecast] = useState([]);
   const [iconPath, getIconPath] = useState('');
   const [date, getDate] = useState('');
   const [fontsLoaded] = useFonts({
@@ -42,19 +47,16 @@ export default function App () {
   }, []);
 
   const getCity = async (location) => {
-    const {data} = await axios.get(`https://eu1.locationiq.com/v1/reverse?key=${API_key_address}&lat=${location[0]}&lon=${location[1]}&format=json&accept-language='en'`)
-    getAddress([data.address.country, data.address.city || data.address.village || data.address.town])
+    const {data} = await axios.get(`https://eu1.locationiq.com/v1/reverse?key=${API_key_address}&lat=${location[0]}&lon=${location[1]}&format=json&accept-language='en'`);
+    getAddress([data.address.country, data.address.city || data.address.village || data.address.town]);
   }
 
   const getWeatherData = async (location) => {
-    const {data: {current}} = await axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${location[0]}&lon=${location[1]}&appid=${API_key_weather}&units=metric&exclude=minutely,alerts`)
-    console.log(current);
-    getWeather([current.temp, current.weather[0].main, current.humidity, current.wind_speed]);
-    const {data: {daily}} = await axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${location[0]}&lon=${location[1]}&appid=${API_key_weather}&units=metric&exclude=current,minutely,alerts`)
-    getHourlyForecast(daily);
-    console.log(daily);
-    getIconPath(`http://openweathermap.org/img/wn/${current.weather[0].icon}@2x.png`);
-    getDate((new Date(daily[0].dt*1000)).toLocaleDateString());
+    const {data} = await axios.get(`https://api.openweathermap.org/data/3.0/onecall?lat=${location[0]}&lon=${location[1]}&appid=${API_key_weather}&units=metric&exclude=minutely,alerts`);
+    getWeather([data.current.temp, data.current.weather[0].main, data.current.humidity, data.current.wind_speed, data.daily[0].temp.min, data.daily[0].temp.max]);
+    getHourlyForecast(data.hourly);
+    getIconPath(`http://openweathermap.org/img/wn/${data.current.weather[0].icon}@2x.png`);
+    getDate((new Date(data.current.dt*1000)).toLocaleDateString());
     
   }
 
@@ -65,114 +67,17 @@ export default function App () {
 
   return (
     <View style={styles.container} onLayout={onLayoutRootView}>
+      {/* <Header /> */}
+
       <View style={styles.user_info}>
-        <Text style={styles.location}>{address.join(', ')}</Text>
-        <Text style={styles.date}>{date}</Text>
+        <Address address={address}/>
+        <Day date={date}/>
       </View>
+     
+      <Current iconPath={iconPath} weather={weather}/>
+     
+      <Forecast hourly={hourlyForecast.splice(1, 24)}/>
       
-      <View style={styles.main}>
-        
-        <View style={styles.weather}>
-          <View style={styles.main_block}>
-            <Image
-              style={styles.icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-            <Text style={styles.temp}>{Math.round(weather[0])}°</Text>
-          </View>
-          
-          <Text style={styles.description}>{weather[1]}</Text>
-
-          <View style={styles.second_info}>
-            <Image
-              style={styles.small_icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-            <Text style={styles.info}>{weather[2]}%</Text>
-            <Image
-              style={styles.small_icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-            <Text style={styles.info}>{weather[3]}m</Text>
-          </View>
-          
-        </View>
-      </View>
-      
-      <ScrollView horizontal pagingEnabled={true} style={styles.forecast}>
-        <View style={styles.card}>
-          <Image
-              style={styles.small_icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
-          <Text style={styles.item}>3</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Image
-              style={styles.small_icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
-          <Text style={styles.item}>3</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Image
-              style={styles.small_icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
-          <Text style={styles.item}>3</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Image
-              style={styles.small_icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
-          <Text style={styles.item}>3</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Image
-              style={styles.small_icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
-          <Text style={styles.item}>3</Text>
-        </View>
-
-        <View style={styles.card}>
-          <Image
-              style={styles.small_icon}
-              source={{
-                uri: `${iconPath}`,
-              }}
-            />
-          <Text style={styles.item}>{Math.round(weather[0])}°</Text>
-          <Text style={styles.item}>3</Text>
-        </View>
-        
-      </ScrollView>
       <StatusBar style="auto" />
     </View>
   );
@@ -185,84 +90,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingTop: StatusBar.currentHeight,
   },
+
   user_info: {
     flex: 1,
-    fontFamily: 'Ruluko',
-  },
-  location: {
-    flex: 1,
-    fontFamily: 'Ruluko',
-    marginTop: 30,
-    fontSize: 30,
-    color: 'rgba(40, 36, 37, 0.9)'
-  },
-  date: {
-    flex: 1,
-    fontFamily: 'Ruluko',
-    fontSize: 15,
-    color: 'rgba(40, 36, 37, 0.9)',
-    textAlign: 'center'
-  },
-  main: {
-    flex: 2,
+    marginTop: 40,
     width: '100%',
-    height: 300,
+    alignItems: 'center',
     justifyContent: 'flex-start',
-    alignItems: 'center',
-  },
-  main_block: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    
-  },
-  icon: {
-    width: 200,
-    height: 100,
-  },
-  temp: {
-    fontFamily: 'Ruluko',
-    fontSize: 40,
-    color: 'rgba(40, 36, 37, 0.9)'
-  },
-  description: {
-    fontFamily: 'Ruluko',
-    fontSize: 25,
-    textAlign: 'center',
-  },
-  second_info: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: 20,
-  },
-  info: {
-    fontFamily: 'Ruluko',
-    fontSize: 20,
-    color: 'rgba(40, 36, 37, 0.9)'
-  },
-  small_icon: {
-    width: 40,
-    height: 40,
-    color: 'black'
-  },
-  forecast: {
-    marginHorizontal: 20,
-  },
-  card: {
-    height: 100,
-    flex: 1,
-    justifyContent: 'space-around',
-    textAlign: 'center',
-    padding: 20,
-    margin: 20,
-    borderColor: 'red',
-    borderRadius: 5,
-    borderStyle: 'solid',
-    borderWidth: 1
-  },
-  item: {
-    fontSize: 20,
+    paddingHorizontal: 0
+
   }
+  
+ 
+  
+ 
 });
