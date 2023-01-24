@@ -1,18 +1,26 @@
-import { useState } from 'react';
-import { Text, View, Image, ScrollView, TextInput, StyleSheet, Button } from 'react-native';
+import { useEffect, useState } from 'react';
+import { Text, View, Image, ScrollView, TextInput, StyleSheet, Button, FlatList } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import debounce from 'lodash.debounce';
+import { addressService } from '../api/services/Address';
+import AddressesList from './AddressesList';
 
 export default function LocationPage ({navigation}) {
   const [text, setText] = useState('');
   const [searchLocation, setSearchLocation] = useState('');
+  const [searchAddresses, setSearchAddresses] = useState([]);
 
+  const getAddresses = async (searchLocation) => {
+    const addresses = await addressService.getAddressByName(searchLocation);
 
-  const debouncedSetText = debounce(setText, 500);
+    setSearchAddresses(addresses);
+  }
 
-  const onChange = (text) => {
-    debouncedSetText(text);
-  };
+  useEffect(() => {
+    if (searchLocation) {
+      getAddresses(searchLocation)
+    }
+    console.log(searchAddresses)
+  }, [searchLocation]);
 
   return (
     <View style={styles.container}>
@@ -32,7 +40,11 @@ export default function LocationPage ({navigation}) {
         title='Search'
         onPress={() => setSearchLocation(text)}
       />
+
+    {searchAddresses && <AddressesList addresses={searchAddresses} />}
+
     </View>
+    
     
   )
 }
@@ -47,7 +59,7 @@ const styles = StyleSheet.create({
   },
   input: {
     margin: 15,
-    height: 25,
+    height: 50,
     borderColor: 'black',
     borderStyle: 'solid',
     borderWidth: 1,

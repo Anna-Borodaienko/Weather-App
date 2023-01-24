@@ -15,7 +15,8 @@ import { weatherService } from '../api/services/Weather';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function MainPage ({navigation}) {
+export default function MainPage ({route, navigation}) {
+  
   const [location, setLocation] = useState([50.44962180359622, 30.509305862461215]);
   const [address, setAddress] = useState([]);
   const [date, setDate] = useState(new Date());
@@ -41,16 +42,21 @@ export default function MainPage ({navigation}) {
 
     const {coords: {latitude, longitude}} = await Location.getCurrentPositionAsync({});
     setLocation([latitude, longitude]);
-  };
+  }
   
   useEffect(() => {
-    getLocation();
-  }, []);
+    if (route.params) {
+      setLocation([route.params.lat, route.params.lon]);
+      return;
+    }
 
+    getLocation();
+  }, [route]);
+  
   const getCity = async (location) => {
-    const { address } = await addressService.getAddress(location);
+    const { address } = await addressService.getAddressByCoords(location);
     
-    setAddress([address.country, address.city || address.village || address.town]);
+    setAddress([address.country, address.city]);
   };
     
   const getWeatherData = async (location) => {

@@ -13,7 +13,6 @@ import SettingsPage from './components/SettingsPage';
 
 const Stack = createNativeStackNavigator();
 
-
 export default function App () {
   return (
     <NavigationContainer>
@@ -24,7 +23,6 @@ export default function App () {
           options={{
             title: 'Home',
           }}
-        
         />
 
         <Stack.Screen 
