@@ -1,10 +1,14 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity  } from "react-native";
+import { useNavigation } from '@react-navigation/native';
+
 
 export default function Address ({address}) {
+  const navigation = useNavigation();
+
   return (
-    <View style={styles.container}>
+    <TouchableOpacity  style={styles.container} onPress ={() => navigation.navigate('Location')}>
       <Text style={styles.location}>{address.join(', ')}</Text>
-    </View>
+    </TouchableOpacity >
   )
 }
 

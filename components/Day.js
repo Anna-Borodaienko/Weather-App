@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from "react-native";
 export default function Day ({date}) {
   return (
     <View style={styles.container}>
-      <Text style={styles.date}>{date}</Text>
+      <Text style={styles.date}>{date.toLocaleDateString()}</Text>
     </View>
   )
 }

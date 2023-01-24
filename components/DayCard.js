@@ -1,20 +1,23 @@
 import { View, Text, StyleSheet, Image } from "react-native";
 
-export default function Day_card ({item}) {
+export default function DayCard ({item}) {
   const iconPath = `http://openweathermap.org/img/wn/${item.weather[0].icon}@2x.png`;
-  const hour = (new Date(item.dt*1000)).getHours();
+  const date = (new Date(item.dt*1000)).toLocaleDateString();
+
   return (
-    <View style={styles.card}>
-      <Text style={styles.hours}>{hour}:00</Text>
+    <View>
+      <View style={styles.card}>
+      <Text style={styles.date}>{date}</Text>
       <Image
           style={styles.icon}
           source={{uri: `${iconPath}`}}
         />
       <View style={styles.info}>
-        <Text style={styles.item}>{Math.round(item.temp)}° / </Text>
-        <Text style={styles.item}>{item.humidity}%</Text>
+        <Text style={styles.item}>{Math.round(item.temp.min)}° / </Text>
+        <Text style={styles.item}>{Math.round(item.temp.max)}°</Text>
       </View>
       
+    </View>
     </View>
   )
 }
@@ -23,7 +26,8 @@ const styles = StyleSheet.create({
   
   card: {
     flex: 1,
-    justifyContent: 'space-between',
+    flexDirection: 'row',
+    justifyContent: 'space-around',
     alignItems: 'center',
     padding: 10,
     margin: 10,
@@ -35,17 +39,17 @@ const styles = StyleSheet.create({
   },
   icon: {
     width: 100,
-    height: 100,
+    height: 50,
   },
   info: {
     flexDirection: 'row',
-    paddingHorizontal: 10,
+    paddingVertical: 5,
   },
   item: {
     fontSize: 20,
-    paddingVertical: 10,
+    paddingVertical: 5,
   },
-  hours: {
-    fontSize: 25,
+  date: {
+    fontSize: 20,
   }
 })

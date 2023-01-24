@@ -5,37 +5,43 @@ const humidity = require('../assets/humidity.png');
 const wind = require('../assets/wind.png');
 
 
-export default function Current ({iconPath, weather}) {
+export default function Current ({weather, daily}) {
+  const iconPath = (`http://openweathermap.org/img/wn/${weather.weather[0].icon}@2x.png`);
   return (
     <View style={styles.container}>
         
       <View style={styles.weather}>
         <View style={styles.main_block}>
-          <Text style={styles.temp}>{Math.round(weather[0])}°</Text>
+          <Text style={styles.temp}>{Math.round(weather.temp)}°</Text>
           <Image
             style={styles.icon}
             source={{
               uri: `${iconPath}`,
             }}
           />
-          <Text style={styles.second_temp}>{Math.round(weather[4])}° / </Text>
-          <Text style={styles.second_temp}>{Math.round(weather[5])}°</Text>
+          <Text style={styles.second_temp}>{Math.round(daily.temp.min)}° / </Text>
+          <Text style={styles.second_temp}>{Math.round(daily.temp.max)}°</Text>
         </View>
         
-        <Text style={styles.description}>{weather[1]}</Text>
+        <Text style={styles.description}>{weather.weather[0].description}</Text>
 
         <View style={styles.second_info}>
-          <Image
-            style={styles.small_icon}
-            source={humidity}
-          />
-          <Text style={styles.info}>{weather[2]}%</Text>
-          <Image
-            style={styles.small_icon}
-            source={wind}
-          />
-          <Text style={styles.info}>{weather[3]}m</Text>
-        </View>
+          <View style={styles.other_info}>
+            <Image
+              style={styles.small_icon}
+              source={humidity}
+            />
+            <Text style={styles.info}>{weather.humidity}%</Text>
+          </View>
+          
+          <View style={styles.other_info}>
+            <Image
+              style={styles.small_icon}
+              source={wind}
+            />
+            <Text style={styles.info}>{weather.wind_speed}m</Text>
+            </View>
+          </View>
         
       </View>
     </View>
@@ -59,8 +65,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   icon: {
-    width: 200,
-    height: 100,
+    width: 150,
+    height: 150,
   },
   temp: {
     fontFamily: 'Ruluko',
@@ -76,11 +82,17 @@ const styles = StyleSheet.create({
     fontFamily: 'Ruluko',
     fontSize: 25,
     textAlign: 'center',
+    textTransform: 'uppercase',
   },
   second_info: {
     flex: 1,
     flexDirection: 'row',
     justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  other_info: {
+    flex: 1,
+    justifyContent: 'center',
     alignItems: 'center',
   },
   info: {
@@ -89,7 +101,7 @@ const styles = StyleSheet.create({
     color: 'rgba(40, 36, 37, 0.9)'
   },
   small_icon: {
-    width: 40,
-    height: 40,
+    width: 30,
+    height: 30,
   },
 })
